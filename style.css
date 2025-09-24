@@ -1,0 +1,892 @@
+/* * style.css
+ * * Fail ini menyediakan gaya CSS asas untuk laman web moden dan responsif.
+ * Ia menggunakan tema gelap dengan aksen warna yang cerah.
+ * * Kandungan:
+ * 1. Penetapan Semula Asas & Tipografi Global
+ * 2. Gaya Layout Utama (Container)
+ * 3. Gaya Heading (H1-H6)
+ * 4. Gaya Butang
+ * 5. Gaya Borang (Input, Select, Textarea)
+ * 6. Gaya Jadual
+ * 7. Gaya Kad/Panel
+ * 8. Utiliti Asas
+ * 9. Media Queries untuk Responsif
+ * 10. Gaya Modal Bantuan Baru
+ * 11. Gaya Cetak
+ * 12. Gaya Pemilih Bahasa
+ */
+
+/* 1. Penetapan Semula Asas & Tipografi Global */
+/* Box-sizing untuk model kotak yang lebih intuitif */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Penetapan semula margin dan padding lalai pelayar */
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, figure, figcaption, blockquote, dl, dd {
+    margin: 0;
+    padding: 0;
+}
+
+/* Tetapkan font global, warna latar belakang, dan warna teks utama */
+body {
+    font-family: 'Arial', sans-serif; /* Gunakan Arial atau sans-serif fallback */
+    color: #00ff00; /* Neon green text */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+
+    /* Background Image Styling */
+    background-image: url('background.jpg'); /* Pastikan 'background.jpg' berada di folder yang sama dengan 'style.css' */
+    background-size: cover; /* Meliputi seluruh kawasan, mungkin memotong tepi gambar */
+    background-position: center center; /* Memastikan gambar di tengah */
+    background-repeat: no-repeat; /* Mengelakkan pengulangan gambar */
+    background-attachment: fixed; /* Latar belakang kekal walaupun di-scroll */
+}
+
+.container {
+    background-color: rgba(17, 17, 17, 0.6); /* Asalnya #111111, kini 60% lutsinar */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); /* Stronger neon glow */
+    width: 90%;
+    max-width: 1200px;
+    margin-bottom: 30px;
+    border: 1px solid #00ff00; /* Main container border */
+}
+
+h1, h2, h3 {
+    color: #00ff00; /* Neon green for all headings */
+    text-align: center;
+    margin-bottom: 25px;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.7em;
+    margin-top: 30px;
+}
+
+h3 {
+    font-size: 1.5em;
+    margin-top: 20px;
+}
+
+/* Credits Section */
+.credits {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #bbb; /* Lighter grey for credits */
+    font-size: 0.9em;
+}
+
+.credit-item {
+    margin: 5px 0;
+}
+
+/* Date Time Display */
+.datetime-display {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    color: #00ffff; /* Cyan for date/time */
+    font-weight: bold;
+}
+
+/* 12. NEW: Language Selector Styles */
+.language-selector {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: rgba(26, 26, 26, 0.6);
+    border-radius: 8px;
+    border: 1px solid #006600;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.language-selector label {
+    font-size: 1.1em;
+    margin-right: 10px;
+    color: #e0e0e0;
+}
+
+.language-selector select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+    background-color: rgba(34, 34, 34, 0.5);
+    color: #00ff00;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.language-selector select:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+
+/* Pair Selection */
+.pair-selection {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.pair-selection label {
+    font-size: 1.1em;
+    margin-right: 10px;
+    color: #e0e0e0;
+}
+
+.pair-selection select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+    background-color: rgba(34, 34, 34, 0.5); /* Asalnya #222222, kini 50% lutsinar */
+    color: #00ff00; /* Teks dalam input/select */
+    font-size: 1em;
+    margin-bottom: 15px;
+}
+
+.pair-selection select:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+/* START: Heatmap Styles */
+.heatmap-container {
+    background-color: rgba(17, 17, 17, 0.6); /* Latar belakang lutsinar seperti elemen lain */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); /* Neon glow */
+    width: 100%; /* Lebar penuh dalam parent */
+    max-width: 600px; /* Saiz maksimum untuk heatmap */
+    text-align: center;
+    border: 1px solid #00ff00; /* Sempadan neon */
+    margin-top: 30px; /* Jarak dari elemen di atasnya dalam results-section */
+    margin-left: auto; /* Untuk centering */
+    margin-right: auto; /* Untuk centering */
+}
+
+.heatmap-title {
+    color: #00ffff; /* Warna cyan untuk tajuk */
+    font-size: 1.8em;
+    margin-bottom: 25px;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+}
+
+.heatmap-grid {
+    display: grid;
+    /* 1 lajur auto untuk label indikator, 8 lajur 1fr untuk data */
+    grid-template-columns: auto repeat(8, 1fr); 
+    /* 1 baris auto untuk label jangka masa, 8 baris 1fr untuk data */
+    grid-template-rows: auto repeat(8, 1fr); 
+    gap: 1px; /* Jarak antara sel kini 1px */
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Pastikan grid adalah segi empat sama */
+    border: 2px solid #00ff00; /* Sempadan grid luar dikembalikan */
+    border-radius: 5px;
+    overflow: hidden; /* Pastikan sel tidak melimpah */
+}
+
+.heatmap-cell {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 2px; /* Sedikit sudut bulat untuk sel individu */
+    transition: background-color 0.3s ease; /* Peralihan warna yang lancar */
+    border: 0.5px solid rgba(0, 255, 0, 0.3); /* Sempadan halus neon pada setiap sel */
+}
+
+.heatmap-label-cell {
+    background-color: rgba(0, 51, 0, 0.7); /* Latar belakang untuk label */
+    color: #00ffff; /* Warna teks label */
+    font-weight: bold;
+    font-size: 0.9em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    text-align: center;
+    border: 0.5px solid rgba(0, 255, 0, 0.3); /* Sempadan halus */
+    border-radius: 2px;
+}
+
+/* Kelas warna untuk sel heatmap - DIKEMBALIKAN KE WARNA ASAL */
+.color-0 { background-color: #00ff00; } /* Hijau - Risiko Sangat Rendah / Peluang Tinggi (Buy) */
+.color-1 { background-color: #00cc00; }
+.color-2 { background-color: #009900; } 
+.color-3 { background-color: #006600; }
+.color-4 { background-color: #ffff00; } /* Kuning - Risiko Neutral (Neutral / Grey / White) */
+.color-5 { background-color: #ffcc00; }
+.color-6 { background-color: #ff9900; } 
+.color-7 { background-color: #ff6600; }
+.color-8 { background-color: #ff3300; }
+.color-9 { background-color: #ff0000; } /* Merah - Risiko Tinggi / Peluang Buruk (Sell) */
+
+/* Gaya untuk heatmap dalam sejarah simulasi */
+.history-heatmap-grid {
+    display: grid;
+    /* 1 lajur auto untuk label indikator, 8 lajur 1fr untuk data */
+    grid-template-columns: auto repeat(8, 1fr); 
+    /* 1 baris auto untuk label jangka masa, 8 baris 1fr untuk data */
+    grid-template-rows: auto repeat(8, 1fr); 
+    gap: 0.5px; /* Jarak yang lebih kecil untuk sejarah */
+    width: 100px; /* Saiz lebih kecil untuk sejarah */
+    height: 100px; /* Saiz lebih kecil untuk sejarah */
+    border: 1px solid #00ff00; /* Sempadan neon untuk cetakan */
+    border-radius: 3px; /* Kekalkan sedikit bulat untuk keseluruhan grid */
+    overflow: hidden;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.history-heatmap-cell {
+    width: 100%;
+    height: 100%;
+    background-color: #eee; /* Default background for history cells */
+    border-radius: 1px; /* Sedikit sudut bulat untuk sel individu dalam sejarah */
+    border: 0.25px solid rgba(0, 255, 0, 0.1); /* Sempadan halus neon untuk sejarah */
+}
+
+.history-heatmap-label-cell {
+    background-color: rgba(0, 51, 0, 0.7);
+    color: #00ffff;
+    font-size: 0.6em; /* Saiz fon yang lebih kecil untuk label sejarah */
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+    text-align: center;
+    border: 0.25px solid rgba(0, 255, 0, 0.1);
+    border-radius: 1px;
+}
+/* END: Heatmap Styles */
+
+
+/* Section Styling */
+.pair-section,
+.manual-indicator-table-section,
+.pts-section,
+.results-section,
+.simulation-history-section,
+.prediction-section { /* Ditambah .prediction-section untuk konsistensi */
+    background-color: rgba(26, 26, 26, 0.6); /* Asalnya #1a1a1a, kini 60% lutsinar */
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid #006600; /* Subtle green border */
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); /* Softer glow for inner sections */
+}
+
+/* Manual Indicator Table */
+.manual-indicator-table-section h2 {
+    margin-top: 0;
+}
+
+.manual-indicator-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.manual-indicator-table th,
+.manual-indicator-table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #004400; /* Even darker green for internal borders */
+    color: #e0e0e0;
+}
+
+.manual-indicator-table th {
+    background-color: rgba(0, 51, 0, 0.7); /* Asalnya #003300, kini 70% lutsinar */
+    color: #00ff00;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Indicator Buttons */
+.indicator-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #555;
+    background-color: #333; /* Default state */
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.indicator-button:hover {
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+/* Button states - colors matching dotStates in JS */
+.dot-0 { background-color: #333; border-color: #555; } /* Grey */
+.dot-1 { background-color: #00ff00; border-color: #00cc00; } /* Green - Buy */
+.dot-2 { background-color: #ff3333; border-color: #cc0000; } /* Red - Sell */
+.dot-3 { background-color: #ffff00; border-color: #cccc00; } /* Yellow - Neutral */
+.dot-4 { background-color: #99ff33; border-color: #77cc11; } /* Light Green - Buy Potential */
+.dot-5 { background-color: #ff9900; border-color: #cc7700; } /* Orange - Sell Potential */
+.dot-6 { background-color: #ffffff; border-color: #aaaaaa; } /* White - Mixed */
+
+/* PTS Section */
+.pts-section label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #e0e0e0;
+    font-size: 1.05em;
+}
+
+.pts-section select,
+.pts-section input[type="text"] {
+    width: calc(100% - 22px); /* Account for padding and border */
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #00ff00;
+    background-color: rgba(34, 34, 34, 0.5); /* Asalnya #222222, kini 50% lutsinar */
+    color: #00ff00; /* Teks dalam input/select */
+    font-size: 1em;
+    margin-bottom: 15px;
+}
+
+.pts-section select:focus,
+.pts-section input[type="text"]:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+}
+
+/* Main Button Group */
+.button-group-main {
+    text-align: center;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.simulate-btn,
+.generate-prediction-btn {
+    padding: 12px 25px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.simulate-btn {
+    background-color: #00cc00; /* Darker green */
+    color: #ffffff;
+}
+
+.simulate-btn:hover {
+    background-color: #00ff00; /* Brighter green on hover */
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.9);
+}
+
+.generate-prediction-btn {
+    background-color: #007700; /* Even darker green */
+    color: #ffffff;
+}
+
+.generate-prediction-btn:hover {
+    background-color: #009900;
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.9);
+}
+
+/* Results Section */
+.results-section h2 {
+    margin-top: 0;
+}
+
+.results-section p {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: #e0e0e0;
+}
+
+.results-section p strong {
+    color: #00ff00;
+}
+
+.results-section span {
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.score-level, .prediction-result {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Risk Warning */
+.risk-notice {
+    background-color: rgba(136, 0, 0, 0.7); /* Asalnya #880000, kini 70% lutsinar */
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    border: 1px solid #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+}
+
+/* Prediction Containers (Ramalan Dot Mapping) */
+.prediction-section {
+    background-color: rgba(26, 26, 26, 0.6); /* Asalnya #1a1a1a, kini 60% lutsinar */
+    border: 1px solid #00ff00;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 30px;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+}
+
+.prediction-section h3 {
+    color: #00ff00;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+}
+
+.prediction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.prediction-table th,
+.prediction-table td {
+    padding: 10px 15px;
+    text-align: center;
+    border: 1px solid #006600;
+    color: #e0e0e0;
+}
+
+.prediction-table th {
+    background-color: rgba(0, 51, 0, 0.7); /* Asalnya #003300, kini 70% lutsinar */
+    color: #00ff00;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Specific colors for prediction table text based on dot states (used for Ramalan Dot Mapping) */
+.prediction-table .buy-text, .long-buy {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.prediction-table .sell-text, .long-sell {
+    color: #ff3333;
+    font-weight: bold;
+}
+
+.prediction-table .neutral-text, .sidewatch {
+    color: #ffff00;
+}
+
+.prediction-table .buy-potential-text, .short-buy {
+    color: #99ff33;
+}
+
+.prediction-table .sell-potential-text, .short-sell {
+    color: #ff9900;
+}
+
+.prediction-table .mixed-text {
+    color: #ffffff;
+}
+
+.prediction-table .waiting-entry {
+    color: #00ffff;
+}
+
+/* Simulation History Section */
+.simulation-history-section h2 {
+    margin-top: 0;
+}
+
+.simulation-history-section .button-group {
+    text-align: center;
+    margin-top: 20px; /* Adjust margin-top to separate from previous section */
+    margin-bottom: 20px;
+    display: flex; /* Use flexbox for button alignment */
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    justify-content: center; /* Center buttons */
+    gap: 10px; /* Gap between buttons */
+}
+
+/* Common style for all history action buttons */
+.clear-history-btn,
+.print-history-btn, /* This now applies to the new print heatmap button */
+.copy-history-btn, /* Added copy history button */
+.download-history-btn, /* Added download history button */
+.save-data-btn, /* Local save button */
+.load-data-btn, /* Local load button */
+.save-data-cloud-btn, /* Cloud save button */
+.load-data-cloud-btn, /* Cloud load button */
+.help-info-btn /* NEW: Help/Info Button */
+{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    color: #ffffff; /* Default text color for these buttons */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Consistent shadow */
+}
+
+/* Specific colors for history action buttons */
+.clear-history-btn {
+    background-color: #cc0000; /* Red for clear */
+}
+
+.clear-history-btn:hover {
+    background-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+    transform: translateY(-2px);
+}
+
+/* Print history button (now for heatmap) */
+.print-history-btn {
+    background-color: #0066cc; /* Blue for print */
+}
+
+.print-history-btn:hover {
+    background-color: #0088ff;
+    box-shadow: 0 0 10px rgba(0, 136, 255, 0.7);
+    transform: translateY(-2px);
+}
+
+.copy-history-btn,
+.download-history-btn {
+    background-color: #008800; /* Green for copy/download */
+}
+
+.copy-history-btn:hover,
+.download-history-btn:hover {
+    background-color: #00aa00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+    transform: translateY(-2px);
+}
+
+.save-data-btn,
+.load-data-btn {
+    background-color: #0055aa; /* Biru gelap untuk simpan/muat tempatan */
+}
+
+.save-data-btn:hover,
+.load-data-btn:hover {
+    background-color: #0077cc;
+    box-shadow: 0 0 10px rgba(0, 119, 204, 0.7);
+    transform: translateY(-2px);
+}
+
+.save-data-cloud-btn,
+.load-data-cloud-btn {
+    background-color: #8800cc; /* Ungu untuk simpan/muat awan */
+}
+
+.save-data-cloud-btn:hover,
+.load-data-cloud-btn:hover {
+    background-color: #aa00ff;
+    box-shadow: 0 0 10px rgba(170, 0, 255, 0.7);
+    transform: translateY(-2px);
+}
+
+/* NEW: Help/Info Button Style */
+.help-info-btn {
+    background-color: #cc6600; /* Orange color for help button */
+}
+
+.help-info-btn:hover {
+    background-color: #ff8800;
+    box-shadow: 0 0 10px rgba(255, 136, 0, 0.7);
+    transform: translateY(-2px);
+}
+
+
+/* Cloud features toggle styling */
+.cloud-features-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    gap: 10px;
+    color: #00ffff; /* Cyan color for the label */
+    font-weight: bold;
+}
+
+.cloud-features-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    /* Basic styling for checkbox, can be enhanced with custom checkbox styles */
+}
+
+
+.history-list {
+    background-color: rgba(13, 13, 13, 0.6); /* Asalnya #0d0d0d, kini 60% lutsinar */
+    padding: 15px;
+    border-radius: 5px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #002200;
+    color: #cccccc;
+    font-size: 0.95em;
+}
+
+.history-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #003300;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-item strong {
+    color: #00ff00;
+}
+
+/* NEW: Scrollbar Styling for WebKit browsers (Chrome, Safari, Edge) */
+.history-list::-webkit-scrollbar {
+    width: 12px; /* Lebar scrollbar */
+}
+
+.history-list::-webkit-scrollbar-track {
+    background: rgba(0, 50, 0, 0.3); /* Latar belakang track scrollbar (hijau gelap lutsinar) */
+    border-radius: 10px;
+    border: 1px solid rgba(0, 255, 0, 0.1); /* Sempadan halus neon */
+}
+
+.history-list::-webkit-scrollbar-thumb {
+    background-color: #00cc00; /* Warna thumb scrollbar (hijau neon) */
+    border-radius: 10px;
+    border: 3px solid rgba(0, 0, 0, 0.5); /* Sempadan gelap untuk kesan 3D */
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+    background-color: #00ff00; /* Warna thumb pada hover (hijau lebih terang) */
+}
+
+/* 10. NEW: Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+    backdrop-filter: blur(5px); /* Blur effect for background */
+    -webkit-backdrop-filter: blur(5px); /* For Safari */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    padding: 20px; /* Padding around the modal content */
+}
+
+.modal-content {
+    background-color: rgba(26, 26, 26, 0.9); /* Slightly transparent dark background */
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #00ff00; /* Neon green border */
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px; /* Max width for readability */
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.7); /* Strong neon glow */
+    position: relative; /* For close button positioning */
+    color: #e0e0e0; /* Light text color */
+    max-height: 90vh; /* Max height to allow scrolling */
+    overflow-y: auto; /* Enable scrolling for modal content */
+}
+
+.modal-content h2 {
+    color: #00ffff; /* Cyan for modal title */
+    margin-bottom: 20px;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+.modal-body p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    color: #cccccc;
+}
+
+.modal-body h3 {
+    color: #00ff00; /* Neon green for sub-headings in modal body */
+    text-align: left;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-shadow: none; /* No shadow for sub-headings to keep it clean */
+    font-size: 1.3em;
+}
+
+.modal-body ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    color: #cccccc;
+}
+
+.modal-body ul li {
+    margin-bottom: 5px;
+}
+
+.close-button {
+    color: #00ffff; /* Cyan color for close button */
+    font-size: 30px;
+    font-weight: bold;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #ff0000; /* Red on hover/focus */
+    text-decoration: none;
+    cursor: pointer;
+    transform: rotate(90deg); /* Rotate effect on hover */
+}
+
+/* 11. NEW: Print Styles */
+@media print {
+    body {
+        background: none !important; /* Remove background image for printing */
+        color: #000 !important; /* Black text for readability on paper */
+        padding: 0;
+        margin: 0;
+        display: block; /* Override flexbox for print layout */
+    }
+
+    .print-header {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #000;
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+
+    .print-item {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed #ccc;
+        page-break-inside: avoid; /* Avoid breaking items across pages */
+    }
+
+    .print-item:last-child {
+        border-bottom: none;
+    }
+
+    .print-item h4 {
+        color: #333; /* Darker color for print headings */
+        font-size: 1.1em;
+        margin-bottom: 5px;
+    }
+
+    .print-item p {
+        color: #555; /* Darker color for print text */
+        font-size: 0.9em;
+        margin-bottom: 3px;
+    }
+
+    .print-item .history-heatmap-grid {
+        border: 1px solid #000; /* Black border for print heatmap */
+        margin-top: 10px;
+        margin-bottom: 10px;
+        /* Ensure colors are visible on white background */
+    }
+
+    /* Adjust heatmap cell colors for print if needed, e.g., make them bolder */
+    .print-item .history-heatmap-cell.color-0 { background-color: #00cc00; } /* Darker green */
+    .print-item .history-heatmap-cell.color-1 { background-color: #00aa00; }
+    .print-item .history-heatmap-cell.color-2 { background-color: #008800; } 
+    .print-item .history-heatmap-cell.color-3 { background-color: #006600; }
+    .print-item .history-heatmap-cell.color-4 { background-color: #cccc00; } /* Darker yellow */
+    .print-item .history-heatmap-cell.color-5 { background-color: #cc9900; }
+    .print-item .history-heatmap-cell.color-6 { background-color: #cc6600; } 
+    .print-item .history-heatmap-cell.color-7 { background-color: #cc3300; }
+    .print-item .history-heatmap-cell.color-8 { background-color: #cc0000; }
+    .print-item .history-heatmap-cell.color-9 { background-color: #aa0000; } /* Darker red */
+
+    .print-item .history-heatmap-label-cell {
+        background-color: #f0f0f0; /* Light background for print labels */
+        color: #000; /* Black text for print labels */
+        border: 0.5px solid #aaa;
+    }
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .manual-indicator-table th,
+    .manual-indicator-table td {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+
+    .indicator-button {
+        width: 25px;
+        height: 25px;
+    }
+
+    .simulate-btn,
+    .generate-prediction-btn,
+    .clear-history-btn,
+    .print-history-btn,
+    .copy-history-btn,
+    .download-history-btn,
+    .save-data-btn,
+    .load-data-btn,
+    .save-data-cloud-btn,
+    .load-data-cloud-btn,
+    .help-info-btn {
+        width: 100%;
+        margin: 5px 0; /* Adjust margin for stacked buttons */
+        padding: 10px;
+        font-size: 0.95em; /* Slightly smaller font for mobile buttons */
+    }
+
+    .simulation-history-section .button-group {
+        flex-direction: column; /* Stack buttons vertically on small screens */
+        align-items: center;
+    }
+
+    .modal-content {
+        width: 95%; /* Make modal content wider on small screens */
+        padding: 20px;
+        max-height: 85vh; /* Adjust max height for mobile */
+    }
+
+    .close-button {
+        font-size: 24px;
+        top: 10px;
+        right: 15px;
+    }
+}

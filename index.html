@@ -1,0 +1,600 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="appTitle">Enoviax Manual Simulator (EMS)</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK - Add these scripts -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Make Firebase objects globally accessible for script.js
+        window.firebaseApp = null;
+        window.db = null;
+        window.auth = null;
+        window.userId = null;
+        window.appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; // Global app ID
+
+        // Expose Firebase functions to the global scope so script.js can use them
+        window.firebase = {
+            initializeApp: initializeApp,
+            getAuth: getAuth,
+            signInAnonymously: signInAnonymously,
+            signInWithCustomToken: signInWithCustomToken,
+            onAuthStateChanged: onAuthStateChanged,
+            getFirestore: getFirestore,
+            doc: doc,
+            getDoc: getDoc,
+            setDoc: setDoc,
+            collection: collection,
+            onSnapshot: onSnapshot,
+            deleteDoc: deleteDoc,
+            updateDoc: updateDoc
+        };
+        
+        // The actual initialization logic will now be in script.js,
+        // called conditionally based on the cloud toggle.
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="mainTitle">Enoviax Manual Simulator (EMS)</h1>
+        <div class="credits">
+            <p class="credit-item" id="softwareArch">Software architecture: Zulkarnain Haron.</p>
+            <p class="credit-item" id="codingAssist">Coding assistance: AIs.</p>
+            <p class="credit-item" id="proudMessage">"I am Very Proud of you" Ainul Mardiah".</p>
+        </div>
+        <div id="currentDateTimeDisplay" class="datetime-display"></div>
+        <div id="userIdDisplay" class="user-id-display">User ID: Memuatkan...</div> <!-- User ID Display -->
+        <div id="loadingIndicator" class="loading-indicator" style="display:none;">Memuatkan data...</div> <!-- Loading Indicator -->
+
+        <div class="language-selector">
+            <label id="languageLabel" for="languageSelect">Pilih Bahasa:</label>
+            <select id="languageSelect">
+                <option value="ms">Bahasa Melayu</option>
+                <option value="en">English</option>
+                <option value="zh">简体中文</option>
+            </select>
+        </div>
+
+        <div class="pair-selection">
+            <label id="pairSelectorLabel" for="pairSelector">Pilih Pair:</label>
+            <select id="pairSelector">
+                <option value="USDJPY">USD/JPY</option>
+                <option value="EURJPY">EUR/JPY</option>
+                <option value="GOLD">XAU/USD</option>
+            </select>
+        </div>
+
+        <!-- START USD/JPY SECTION -->
+        <div id="usdJpySection" class="pair-section">
+            <div class="manual-indicator-table-section">
+                <h2 id="usdjpyMappingTitle">USD/JPY - DOT154 Mapping</h2>
+                <table class="manual-indicator-table">
+                    <thead>
+                        <tr>
+                            <th id="indicatorHeaderUSDJPY">Indikator</th>
+                            <th id="day1HeaderUSDJPY">Day 1</th>
+                            <th id="m15HeaderUSDJPY">M15</th>
+                            <th id="h1HeaderUSDJPY">H1</th>
+                            <th id="h4HeaderUSDJPY">H4</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="emaLabelUSDJPY">EMA9 vs WMA50</td>
+                            <td><button class="indicator-button" id="usdjpy_ema_day1" data-pair="USDJPY" data-indicator="EMA" data-timeframe="Day1" title="USD/JPY EMA9 vs WMA50 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_ema_m15" data-pair="USDJPY" data-indicator="EMA" data-timeframe="M15" title="USD/JPY EMA9 vs WMA50 - M15"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_ema_h1" data-pair="USDJPY" data-indicator="EMA" data-timeframe="H1" title="USD/JPY EMA9 vs WMA50 - H1"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_ema_h4" data-pair="USDJPY" data-indicator="EMA" data-timeframe="H4" title="USD/JPY EMA9 vs WMA50 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="bbLabelUSDJPY">BB 20:3</td>
+                            <td><button class="indicator-button" id="usdjpy_bb_day1" data-pair="USDJPY" data-indicator="BB" data-timeframe="Day1" title="USD/JPY BB 20:3 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_bb_m15" data-pair="USDJPY" data-indicator="BB" data-timeframe="M15" title="USD/JPY BB 20:3 - M15"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_bb_h1" data-pair="USDJPY" data-indicator="BB" data-timeframe="H1" title="USD/JPY BB 20:3 - H1"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_bb_h4" data-pair="USDJPY" data-indicator="BB" data-timeframe="H4" title="USD/JPY BB 20:3 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="rsiLabelUSDJPY">RSI14</td>
+                            <td><button class="indicator-button" id="usdjpy_rsi_day1" data-pair="USDJPY" data-indicator="RSI" data-timeframe="Day1" title="USD/JPY RSI14 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_rsi_m15" data-pair="USDJPY" data-indicator="RSI" data-timeframe="M15" title="USD/JPY RSI14 - M15"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_rsi_h1" data-pair="USDJPY" data-indicator="RSI" data-timeframe="H1" title="USD/JPY RSI14 - H1"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_rsi_h4" data-pair="USDJPY" data-indicator="RSI" data-timeframe="H4" title="USD/JPY RSI14 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="macdLabelUSDJPY">MACD (12,26,9)</td>
+                            <td><button class="indicator-button" id="usdjpy_macd_day1" data-pair="USDJPY" data-indicator="MACD" data-timeframe="Day1" title="USD/JPY MACD (12,26,9) - Day 1"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_macd_m15" data-pair="USDJPY" data-indicator="MACD" data-timeframe="M15" title="USD/JPY MACD (12,26,9) - M15"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_macd_h1" data-pair="USDJPY" data-indicator="MACD" data-timeframe="H1" title="USD/JPY MACD (12,26,9) - H1"></button></td>
+                            <td><button class="indicator-button" id="usdjpy_macd_h4" data-pair="USDJPY" data-indicator="MACD" data-timeframe="H4" title="USD/JPY MACD (12,26,9) - H4"></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pts-section">
+                <h2 id="ptsScoreTitleUSDJPY">PTS Score (Psychological & Candle Pressure)</h2>
+                <label id="ptsInputLabelUSDJPY" for="ptsScoreInputUSDJPY">Masukkan PTS Score:</label>
+                <select id="ptsScoreInputUSDJPY">
+                    <option value="0" id="ptsOption0USDJPY">0 (Tiada)</option>
+                    <option value="0.5" id="ptsOption0_5USDJPY">+0.5 (Strong Pinbar @ BB Lower)</option>
+                    <option value="1.0" id="ptsOption1_0USDJPY">+1.0 (Bullish Rejection on Major Support)</option>
+                    <option value="-0.5" id="ptsOptionNeg0_5USDJPY">-0.5 (Mild Bearish)</option>
+                    <option value="-1.0" id="ptsOptionNeg1_0USDJPY">-1.0 (Bearish Engulfing on Resistance)</option>
+                </select>
+
+                <label id="buyPriceLabelUSDJPY" for="buyPriceInputUSDJPY">Harga Beli:</label>
+                <input type="text" id="buyPriceInputUSDJPY" placeholder="Masukkan harga beli">
+
+                <label id="sellPriceLabelUSDJPY" for="sellPriceInputUSDJPY">Harga Jual:</label>
+                <input type="text" id="sellPriceInputUSDJPY" placeholder="Masukkan harga jual">
+            </div>
+
+            <div class="button-group-main">
+                <button class="simulate-btn" data-pair="USDJPY" id="simulateBtnUSDJPY">Simulasikan Prediksi USD/JPY</button>
+                <button id="generatePredictionButtonUSDJPY" class="generate-prediction-btn" data-pair="USDJPY">Jana Ramalan Dot Mapping & Harga USD/JPY</button>
+            </div>
+
+            <div class="results-section">
+                <h2 id="resultsTitleUSDJPY">Hasil Simulasi USD/JPY</h2>
+                <p><span id="htsScoreTextUSDJPY">HTS Score:</span> <span id="htsScoreDisplayUSDJPY">--</span> / 12</p>
+                <p><span id="ptsScoreTextUSDJPY">PTS Score:</span> <span id="ptsScoreDisplayUSDJPY">--</span></p>
+                <p><span id="deltaXTextUSDJPY">Delta-X Total:</span> <span id="deltaXScoreDisplayUSDJPY">--</span> / 12</p>
+                <p><span id="grailConfidenceTextUSDJPY">Grail Confidence:</span> <span id="grailConfidenceDisplayUSDJPY">--%</span></p>
+                <p><span id="confidenceLevelTextUSDJPY">Tahap Keyakinan:</span> <span id="confidenceLevelDisplayUSDJPY" class="score-level">--</span></p>
+                <p><strong><span id="predictionResultTitleUSDJPY">Keputusan Prediksi:</span></strong> <span id="predictionResultDisplayUSDJPY" class="prediction-result">--</span></p>
+                <p><span id="m15StatusTextUSDJPY">Status M15:</span> <span id="usdjpyM15Status">--</span></p>
+                <p><span id="h1StatusTextUSDJPY">Status H1:</span> <span id="usdjpyH1Status">--</span></p>
+                <p><span id="h4StatusTextUSDJPY">Status H4:</span> <span id="usdjpyH4Status">--</span></p>
+                <div id="riskWarningUSDJPY" class="risk-notice"></div>
+
+                <!-- START: Risk Heatmap Section for USDJPY -->
+                <div class="heatmap-container">
+                    <h3 class="heatmap-title" id="riskHeatmapTitleUSDJPY">RISK HEATMAP</h3>
+                    <div class="heatmap-grid" id="riskHeatmapGridUSDJPY">
+                        <!-- Top-left empty cell -->
+                        <div class="heatmap-label-cell"></div>
+                        <!-- Top row labels (timeframes) -->
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapD1HeaderUSDJPY">D1</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapM15HeaderUSDJPY">M15</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapH1HeaderUSDJPY">H1</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapH4HeaderUSDJPY">H4</div>
+                        
+                        <!-- Indicator labels and 2x2 data cells -->
+                        <!-- Row for Trend (EMA) -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapTrendLabelUSDJPY">Trend</div>
+                        <div class="heatmap-cell" data-row="0" data-col="0"></div><div class="heatmap-cell" data-row="0" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="2"></div><div class="heatmap-cell" data-row="0" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="4"></div><div class="heatmap-cell" data-row="0" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="6"></div><div class="heatmap-cell" data-row="0" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="0"></div><div class="heatmap-cell" data-row="1" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="2"></div><div class="heatmap-cell" data-row="1" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="4"></div><div class="heatmap-cell" data-row="1" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="6"></div><div class="heatmap-cell" data-row="1" data-col="7"></div>
+
+                        <!-- Row for BB -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapBBLabelUSDJPY">BB</div>
+                        <div class="heatmap-cell" data-row="2" data-col="0"></div><div class="heatmap-cell" data-row="2" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="2"></div><div class="heatmap-cell" data-row="2" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="4"></div><div class="heatmap-cell" data-row="2" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="6"></div><div class="heatmap-cell" data-row="2" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="0"></div><div class="heatmap-cell" data-row="3" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="2"></div><div class="heatmap-cell" data-row="3" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="4"></div><div class="heatmap-cell" data-row="3" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="6"></div><div class="heatmap-cell" data-row="3" data-col="7"></div>
+
+                        <!-- Row for RSI -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapRSILabelUSDJPY">RSI</div>
+                        <div class="heatmap-cell" data-row="4" data-col="0"></div><div class="heatmap-cell" data-row="4" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="2"></div><div class="heatmap-cell" data-row="4" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="4"></div><div class="heatmap-cell" data-row="4" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="6"></div><div class="heatmap-cell" data-row="4" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="0"></div><div class="heatmap-cell" data-row="5" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="2"></div><div class="heatmap-cell" data-row="5" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="4"></div><div class="heatmap-cell" data-row="5" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="6"></div><div class="heatmap-cell" data-row="5" data-col="7"></div>
+
+                        <!-- Row for MACD -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapMACDLabelUSDJPY">MACD</div>
+                        <div class="heatmap-cell" data-row="6" data-col="0"></div><div class="heatmap-cell" data-row="6" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="2"></div><div class="heatmap-cell" data-row="6" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="4"></div><div class="heatmap-cell" data-row="6" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="6"></div><div class="heatmap-cell" data-row="6" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="0"></div><div class="heatmap-cell" data-row="7" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="2"></div><div class="heatmap-cell" data-row="7" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="4"></div><div class="heatmap-cell" data-row="7" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="6"></div><div class="heatmap-cell" data-row="7" data-col="7"></div>
+                    </div>
+                </div>
+                <!-- END: Risk Heatmap Section for USDJPY -->
+
+            </div>
+
+            <div id="predictionDotMappingContainerUSDJPY" class="prediction-section">
+                <h3 id="predictionDotMappingTitleUSDJPY">Ramalan Dot Mapping USD/JPY</h3>
+                <table class="prediction-table">
+                    <thead>
+                        <tr>
+                            <th id="predIndicatorHeaderUSDJPY">Indikator</th><th id="predDay1HeaderUSDJPY">Day 1</th><th id="predM15HeaderUSDJPY">M15</th><th id="predH1HeaderUSDJPY">H1</th><th id="predH4HeaderUSDJPY">H4</th>
+                        </tr>
+                    </thead>
+                    <tbody id="predictionTableBodyUSDJPY">
+                    </tbody>
+                </table>
+            </div>
+
+        </div> 
+        <!-- END USD/JPY SECTION -->
+
+        <!-- START EUR/JPY SECTION -->
+        <div id="eurJpySection" class="pair-section" style="display:none;">
+            <div class="manual-indicator-table-section">
+                <h2 id="eurjpyMappingTitle">EUR/JPY - DOT154 Mapping</h2>
+                <table class="manual-indicator-table">
+                    <thead>
+                        <tr>
+                            <th id="indicatorHeaderEURJPY">Indikator</th>
+                            <th id="day1HeaderEURJPY">Day 1</th>
+                            <th id="m15HeaderEURJPY">M15</th>
+                            <th id="h1HeaderEURJPY">H1</th>
+                            <th id="h4HeaderEURJPY">H4</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="emaLabelEURJPY">EMA9 vs WMA50</td>
+                            <td><button class="indicator-button" id="eurjpy_ema_day1" data-pair="EURJPY" data-indicator="EMA" data-timeframe="Day1" title="EUR/JPY EMA9 vs WMA50 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_ema_m15" data-pair="EURJPY" data-indicator="EMA" data-timeframe="M15" title="EUR/JPY EMA9 vs WMA50 - M15"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_ema_h1" data-pair="EURJPY" data-indicator="EMA" data-timeframe="H1" title="EUR/JPY EMA9 vs WMA50 - H1"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_ema_h4" data-pair="EURJPY" data-indicator="EMA" data-timeframe="H4" title="EUR/JPY EMA9 vs WMA50 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="bbLabelEURJPY">BB 20:3</td>
+                            <td><button class="indicator-button" id="eurjpy_bb_day1" data-pair="EURJPY" data-indicator="BB" data-timeframe="Day1" title="EUR/JPY BB 20:3 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_bb_m15" data-pair="EURJPY" data-indicator="BB" data-timeframe="M15" title="EUR/JPY BB 20:3 - M15"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_bb_h1" data-pair="EURJPY" data-indicator="BB" data-timeframe="H1" title="EUR/JPY BB 20:3 - H1"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_bb_h4" data-pair="EURJPY" data-indicator="BB" data-timeframe="H4" title="EUR/JPY BB 20:3 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="rsiLabelEURJPY">RSI14</td>
+                            <td><button class="indicator-button" id="eurjpy_rsi_day1" data-pair="EURJPY" data-indicator="RSI" data-timeframe="Day1" title="EUR/JPY RSI14 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_rsi_m15" data-pair="EURJPY" data-indicator="RSI" data-timeframe="M15" title="EUR/JPY RSI14 - M15"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_rsi_h1" data-pair="EURJPY" data-indicator="RSI" data-timeframe="H1" title="EUR/JPY RSI14 - H1"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_rsi_h4" data-pair="EURJPY" data-indicator="RSI" data-timeframe="H4" title="EUR/JPY RSI14 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="macdLabelEURJPY">MACD (12,26,9)</td>
+                            <td><button class="indicator-button" id="eurjpy_macd_day1" data-pair="EURJPY" data-indicator="MACD" data-timeframe="Day1" title="EUR/JPY MACD (12,26,9) - Day 1"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_macd_m15" data-pair="EURJPY" data-indicator="MACD" data-timeframe="M15" title="EUR/JPY MACD (12,26,9) - M15"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_macd_h1" data-pair="EURJPY" data-indicator="MACD" data-timeframe="H1" title="EUR/JPY MACD (12,26,9) - H1"></button></td>
+                            <td><button class="indicator-button" id="eurjpy_macd_h4" data-pair="EURJPY" data-indicator="MACD" data-timeframe="H4" title="EUR/JPY MACD (12,26,9) - H4"></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pts-section">
+                <h2 id="ptsScoreTitleEURJPY">PTS Score (Psychological & Candle Pressure)</h2>
+                <label id="ptsInputLabelEURJPY" for="ptsScoreInputEURJPY">Masukkan PTS Score:</label>
+                <select id="ptsScoreInputEURJPY">
+                    <option value="0" id="ptsOption0EURJPY">0 (Tiada)</option>
+                    <option value="0.5" id="ptsOption0_5EURJPY">+0.5 (Strong Pinbar @ BB Lower)</option>
+                    <option value="1.0" id="ptsOption1_0EURJPY">+1.0 (Bullish Rejection on Major Support)</option>
+                    <option value="-0.5" id="ptsOptionNeg0_5EURJPY">-0.5 (Mild Bearish)</option>
+                    <option value="-1.0" id="ptsOptionNeg1_0EURJPY">-1.0 (Bearish Engulfing on Resistance)</option>
+                </select>
+
+                <label id="buyPriceLabelEURJPY" for="buyPriceInputEURJPY">Harga Beli:</label>
+                <input type="text" id="buyPriceInputEURJPY" placeholder="Masukkan harga beli">
+
+                <label id="sellPriceLabelEURJPY" for="sellPriceInputEURJPY">Harga Jual:</label>
+                <input type="text" id="sellPriceInputEURJPY" placeholder="Masukkan harga jual">
+            </div>
+
+            <div class="button-group-main">
+                <button class="simulate-btn" data-pair="EURJPY" id="simulateBtnEURJPY">Simulasikan Prediksi EUR/JPY</button>
+                <button id="generatePredictionButtonEURJPY" class="generate-prediction-btn" data-pair="EURJPY">Jana Ramalan Dot Mapping & Harga EUR/JPY</button>
+            </div>
+
+            <div class="results-section">
+                <h2 id="resultsTitleEURJPY">Hasil Simulasi EUR/JPY</h2>
+                <p><span id="htsScoreTextEURJPY">HTS Score:</span> <span id="htsScoreDisplayEURJPY">--</span> / 12</p>
+                <p><span id="ptsScoreTextEURJPY">PTS Score:</span> <span id="ptsScoreDisplayEURJPY">--</span></p>
+                <p><span id="deltaXTextEURJPY">Delta-X Total:</span> <span id="deltaXScoreDisplayEURJPY">--</span> / 12</p>
+                <p><span id="grailConfidenceTextEURJPY">Grail Confidence:</span> <span id="grailConfidenceDisplayEURJPY">--%</span></p>
+                <p><span id="confidenceLevelTextEURJPY">Tahap Keyakinan:</span> <span id="confidenceLevelDisplayEURJPY" class="score-level">--</span></p>
+                <p><strong><span id="predictionResultTitleEURJPY">Keputusan Prediksi:</span></strong> <span id="predictionResultDisplayEURJPY" class="prediction-result">--</span></p>
+                <p><span id="m15StatusTextEURJPY">Status M15:</span> <span id="eurjpyM15Status">--</span></p>
+                <p><span id="h1StatusTextEURJPY">Status H1:</span> <span id="eurjpyH1Status">--</span></p>
+                <p><span id="h4StatusTextEURJPY">Status H4:</span> <span id="eurjpyH4Status">--</span></p>
+                <div id="riskWarningEURJPY" class="risk-notice"></div>
+
+                <!-- START: Risk Heatmap Section for EURJPY -->
+                <div class="heatmap-container">
+                    <h3 class="heatmap-title" id="riskHeatmapTitleEURJPY">RISK HEATMAP</h3>
+                    <div class="heatmap-grid" id="riskHeatmapGridEURJPY">
+                        <!-- Top-left empty cell -->
+                        <div class="heatmap-label-cell"></div>
+                        <!-- Top row labels (timeframes) -->
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapD1HeaderEURJPY">D1</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapM15HeaderEURJPY">M15</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapH1HeaderEURJPY">H1</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapH4HeaderEURJPY">H4</div>
+                        
+                        <!-- Indicator labels and 2x2 data cells -->
+                        <!-- Row for Trend (EMA) -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapTrendLabelEURJPY">Trend</div>
+                        <div class="heatmap-cell" data-row="0" data-col="0"></div><div class="heatmap-cell" data-row="0" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="2"></div><div class="heatmap-cell" data-row="0" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="4"></div><div class="heatmap-cell" data-row="0" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="6"></div><div class="heatmap-cell" data-row="0" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="0"></div><div class="heatmap-cell" data-row="1" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="2"></div><div class="heatmap-cell" data-row="1" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="4"></div><div class="heatmap-cell" data-row="1" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="6"></div><div class="heatmap-cell" data-row="1" data-col="7"></div>
+
+                        <!-- Row for BB -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapBBLabelEURJPY">BB</div>
+                        <div class="heatmap-cell" data-row="2" data-col="0"></div><div class="heatmap-cell" data-row="2" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="2"></div><div class="heatmap-cell" data-row="2" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="4"></div><div class="heatmap-cell" data-row="2" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="6"></div><div class="heatmap-cell" data-row="2" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="0"></div><div class="heatmap-cell" data-row="3" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="2"></div><div class="heatmap-cell" data-row="3" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="4"></div><div class="heatmap-cell" data-row="3" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="6"></div><div class="heatmap-cell" data-row="3" data-col="7"></div>
+
+                        <!-- Row for RSI -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapRSILabelEURJPY">RSI</div>
+                        <div class="heatmap-cell" data-row="4" data-col="0"></div><div class="heatmap-cell" data-row="4" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="2"></div><div class="heatmap-cell" data-row="4" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="4"></div><div class="heatmap-cell" data-row="4" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="6"></div><div class="heatmap-cell" data-row="4" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="0"></div><div class="heatmap-cell" data-row="5" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="2"></div><div class="heatmap-cell" data-row="5" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="4"></div><div class="heatmap-cell" data-row="5" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="6"></div><div class="heatmap-cell" data-row="5" data-col="7"></div>
+
+                        <!-- Row for MACD -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapMACDLabelEURJPY">MACD</div>
+                        <div class="heatmap-cell" data-row="6" data-col="0"></div><div class="heatmap-cell" data-row="6" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="2"></div><div class="heatmap-cell" data-row="6" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="4"></div><div class="heatmap-cell" data-row="6" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="6"></div><div class="heatmap-cell" data-row="6" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="0"></div><div class="heatmap-cell" data-row="7" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="2"></div><div class="heatmap-cell" data-row="7" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="4"></div><div class="heatmap-cell" data-row="7" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="6"></div><div class="heatmap-cell" data-row="7" data-col="7"></div>
+                    </div>
+                </div>
+                <!-- END: Risk Heatmap Section for EURJPY -->
+
+            </div>
+
+            <div id="predictionDotMappingContainerEURJPY" class="prediction-section">
+                <h3 id="predictionDotMappingTitleEURJPY">Ramalan Dot Mapping EUR/JPY</h3>
+                <table class="prediction-table">
+                    <thead>
+                        <tr>
+                            <th id="predIndicatorHeaderEURJPY">Indikator</th><th id="predDay1HeaderEURJPY">Day 1</th><th id="predM15HeaderEURJPY">M15</th><th id="predH1HeaderEURJPY">H1</th><th id="predH4HeaderEURJPY">H4</th>
+                        </tr>
+                    </thead>
+                    <tbody id="predictionTableBodyEURJPY">
+                    </tbody>
+                </table>
+            </div>
+
+        </div> 
+        <!-- END EUR/JPY SECTION -->
+        
+        <!-- START GOLD SECTION -->
+        <div id="goldSection" class="pair-section" style="display:none;">
+            <div class="manual-indicator-table-section">
+                <h2 id="goldMappingTitle">XAU/USD - DOT154 Mapping</h2>
+                <table class="manual-indicator-table">
+                    <thead>
+                        <tr>
+                            <th id="indicatorHeaderGOLD">Indikator</th>
+                            <th id="day1HeaderGOLD">Day 1</th>
+                            <th id="m15HeaderGOLD">M15</th>
+                            <th id="h1HeaderGOLD">H1</th>
+                            <th id="h4HeaderGOLD">H4</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="emaLabelGOLD">EMA9 vs WMA50</td>
+                            <td><button class="indicator-button" id="gold_ema_day1" data-pair="GOLD" data-indicator="EMA" data-timeframe="Day1" title="XAU/USD EMA9 vs WMA50 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="gold_ema_m15" data-pair="GOLD" data-indicator="EMA" data-timeframe="M15" title="XAU/USD EMA9 vs WMA50 - M15"></button></td>
+                            <td><button class="indicator-button" id="gold_ema_h1" data-pair="GOLD" data-indicator="EMA" data-timeframe="H1" title="XAU/USD EMA9 vs WMA50 - H1"></button></td>
+                            <td><button class="indicator-button" id="gold_ema_h4" data-pair="GOLD" data-indicator="EMA" data-timeframe="H4" title="XAU/USD EMA9 vs WMA50 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="bbLabelGOLD">BB 20:3</td>
+                            <td><button class="indicator-button" id="gold_bb_day1" data-pair="GOLD" data-indicator="BB" data-timeframe="Day1" title="XAU/USD BB 20:3 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="gold_bb_m15" data-pair="GOLD" data-indicator="BB" data-timeframe="M15" title="XAU/USD BB 20:3 - M15"></button></td>
+                            <td><button class="indicator-button" id="gold_bb_h1" data-pair="GOLD" data-indicator="BB" data-timeframe="H1" title="XAU/USD BB 20:3 - H1"></button></td>
+                            <td><button class="indicator-button" id="gold_bb_h4" data-pair="GOLD" data-indicator="BB" data-timeframe="H4" title="XAU/USD BB 20:3 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="rsiLabelGOLD">RSI14</td>
+                            <td><button class="indicator-button" id="gold_rsi_day1" data-pair="GOLD" data-indicator="RSI" data-timeframe="Day1" title="XAU/USD RSI14 - Day 1"></button></td>
+                            <td><button class="indicator-button" id="gold_rsi_m15" data-pair="GOLD" data-indicator="RSI" data-timeframe="M15" title="XAU/USD RSI14 - M15"></button></td>
+                            <td><button class="indicator-button" id="gold_rsi_h1" data-pair="GOLD" data-indicator="RSI" data-timeframe="H1" title="XAU/USD RSI14 - H1"></button></td>
+                            <td><button class="indicator-button" id="gold_rsi_h4" data-pair="GOLD" data-indicator="RSI" data-timeframe="H4" title="XAU/USD RSI14 - H4"></button></td>
+                        </tr>
+                        <tr>
+                            <td id="macdLabelGOLD">MACD (12,26,9)</td>
+                            <td><button class="indicator-button" id="gold_macd_day1" data-pair="GOLD" data-indicator="MACD" data-timeframe="Day1" title="XAU/USD MACD (12,26,9) - Day 1"></button></td>
+                            <td><button class="indicator-button" id="gold_macd_m15" data-pair="GOLD" data-indicator="MACD" data-timeframe="M15" title="XAU/USD MACD (12,26,9) - M15"></button></td>
+                            <td><button class="indicator-button" id="gold_macd_h1" data-pair="GOLD" data-indicator="MACD" data-timeframe="H1" title="XAU/USD MACD (12,26,9) - H1"></button></td>
+                            <td><button class="indicator-button" id="gold_macd_h4" data-pair="GOLD" data-indicator="MACD" data-timeframe="H4" title="XAU/USD MACD (12,26,9) - H4"></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pts-section">
+                <h2 id="ptsScoreTitleGOLD">PTS Score (Psychological & Candle Pressure)</h2>
+                <label id="ptsInputLabelGOLD" for="ptsScoreInputGOLD">Masukkan PTS Score:</label>
+                <select id="ptsScoreInputGOLD">
+                    <option value="0" id="ptsOption0GOLD">0 (Tiada)</option>
+                    <option value="0.5" id="ptsOption0_5GOLD">+0.5 (Strong Pinbar @ BB Lower)</option>
+                    <option value="1.0" id="ptsOption1_0GOLD">+1.0 (Bullish Rejection on Major Support)</option>
+                    <option value="-0.5" id="ptsOptionNeg0_5GOLD">-0.5 (Mild Bearish)</option>
+                    <option value="-1.0" id="ptsOptionNeg1_0GOLD">-1.0 (Bearish Engulfing on Resistance)</option>
+                </select>
+
+                <label id="buyPriceLabelGOLD" for="buyPriceInputGOLD">Harga Beli:</label>
+                <input type="text" id="buyPriceInputGOLD" placeholder="Masukkan harga beli">
+
+                <label id="sellPriceLabelGOLD" for="sellPriceInputGOLD">Harga Jual:</label>
+                <input type="text" id="sellPriceInputGOLD" placeholder="Masukkan harga jual">
+            </div>
+
+            <div class="button-group-main">
+                <button class="simulate-btn" data-pair="GOLD" id="simulateBtnGOLD">Simulasikan Prediksi XAU/USD</button>
+                <button id="generatePredictionButtonGOLD" class="generate-prediction-btn" data-pair="GOLD">Jana Ramalan Dot Mapping & Harga XAU/USD</button>
+            </div>
+
+            <div class="results-section">
+                <h2 id="resultsTitleGOLD">Hasil Simulasi XAU/USD</h2>
+                <p><span id="htsScoreTextGOLD">HTS Score:</span> <span id="htsScoreDisplayGOLD">--</span> / 12</p>
+                <p><span id="ptsScoreTextGOLD">PTS Score:</span> <span id="ptsScoreDisplayGOLD">--</span></p>
+                <p><span id="deltaXTextGOLD">Delta-X Total:</span> <span id="deltaXScoreDisplayGOLD">--</span> / 12</p>
+                <p><span id="grailConfidenceTextGOLD">Grail Confidence:</span> <span id="grailConfidenceDisplayGOLD">--%</span></p>
+                <p><span id="confidenceLevelTextGOLD">Tahap Keyakinan:</span> <span id="confidenceLevelDisplayGOLD" class="score-level">--</span></p>
+                <p><strong><span id="predictionResultTitleGOLD">Keputusan Prediksi:</span></strong> <span id="predictionResultDisplayGOLD" class="prediction-result">--</span></p>
+                <p><span id="m15StatusTextGOLD">Status M15:</span> <span id="goldM15Status">--</span></p>
+                <p><span id="h1StatusTextGOLD">Status H1:</span> <span id="goldH1Status">--</span></p>
+                <p><span id="h4StatusTextGOLD">Status H4:</span> <span id="goldH4Status">--</span></p>
+                <div id="riskWarningGOLD" class="risk-notice"></div>
+
+                <!-- START: Risk Heatmap Section for GOLD -->
+                <div class="heatmap-container">
+                    <h3 class="heatmap-title" id="riskHeatmapTitleGOLD">RISK HEATMAP</h3>
+                    <div class="heatmap-grid" id="riskHeatmapGridGOLD">
+                        <!-- Top-left empty cell -->
+                        <div class="heatmap-label-cell"></div>
+                        <!-- Top row labels (timeframes) -->
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapD1HeaderGOLD">D1</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapM15HeaderGOLD">M15</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapH1HeaderGOLD">H1</div>
+                        <div class="heatmap-label-cell" style="grid-column: span 2;" id="heatmapH4HeaderGOLD">H4</div>
+                        
+                        <!-- Indicator labels and 2x2 data cells -->
+                        <!-- Row for Trend (EMA) -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapTrendLabelGOLD">Trend</div>
+                        <div class="heatmap-cell" data-row="0" data-col="0"></div><div class="heatmap-cell" data-row="0" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="2"></div><div class="heatmap-cell" data-row="0" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="4"></div><div class="heatmap-cell" data-row="0" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="0" data-col="6"></div><div class="heatmap-cell" data-row="0" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="0"></div><div class="heatmap-cell" data-row="1" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="2"></div><div class="heatmap-cell" data-row="1" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="4"></div><div class="heatmap-cell" data-row="1" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="1" data-col="6"></div><div class="heatmap-cell" data-row="1" data-col="7"></div>
+
+                        <!-- Row for BB -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapBBLabelGOLD">BB</div>
+                        <div class="heatmap-cell" data-row="2" data-col="0"></div><div class="heatmap-cell" data-row="2" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="2"></div><div class="heatmap-cell" data-row="2" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="4"></div><div class="heatmap-cell" data-row="2" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="2" data-col="6"></div><div class="heatmap-cell" data-row="2" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="0"></div><div class="heatmap-cell" data-row="3" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="2"></div><div class="heatmap-cell" data-row="3" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="4"></div><div class="heatmap-cell" data-row="3" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="3" data-col="6"></div><div class="heatmap-cell" data-row="3" data-col="7"></div>
+
+                        <!-- Row for RSI -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapRSILabelGOLD">RSI</div>
+                        <div class="heatmap-cell" data-row="4" data-col="0"></div><div class="heatmap-cell" data-row="4" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="2"></div><div class="heatmap-cell" data-row="4" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="4"></div><div class="heatmap-cell" data-row="4" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="4" data-col="6"></div><div class="heatmap-cell" data-row="4" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="0"></div><div class="heatmap-cell" data-row="5" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="2"></div><div class="heatmap-cell" data-row="5" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="4"></div><div class="heatmap-cell" data-row="5" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="5" data-col="6"></div><div class="heatmap-cell" data-row="5" data-col="7"></div>
+
+                        <!-- Row for MACD -->
+                        <div class="heatmap-label-cell" style="grid-row: span 2;" id="heatmapMACDLabelGOLD">MACD</div>
+                        <div class="heatmap-cell" data-row="6" data-col="0"></div><div class="heatmap-cell" data-row="6" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="2"></div><div class="heatmap-cell" data-row="6" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="4"></div><div class="heatmap-cell" data-row="6" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="6" data-col="6"></div><div class="heatmap-cell" data-row="6" data-col="7"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="0"></div><div class="heatmap-cell" data-row="7" data-col="1"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="2"></div><div class="heatmap-cell" data-row="7" data-col="3"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="4"></div><div class="heatmap-cell" data-row="7" data-col="5"></div>
+                        <div class="heatmap-cell" data-row="7" data-col="6"></div><div class="heatmap-cell" data-row="7" data-col="7"></div>
+                    </div>
+                </div>
+                <!-- END: Risk Heatmap Section for GOLD -->
+
+            </div>
+
+            <div id="predictionDotMappingContainerGOLD" class="prediction-section">
+                <h3 id="predictionDotMappingTitleGOLD">Ramalan Dot Mapping XAU/USD</h3>
+                <table class="prediction-table">
+                    <thead>
+                        <tr>
+                            <th id="predIndicatorHeaderGOLD">Indikator</th><th id="predDay1HeaderGOLD">Day 1</th><th id="predM15HeaderGOLD">M15</th><th id="predH1HeaderGOLD">H1</th><th id="predH4HeaderGOLD">H4</th>
+                        </tr>
+                    </thead>
+                    <tbody id="predictionTableBodyGOLD">
+                    </tbody>
+                </table>
+            </div>
+
+        </div> 
+        <!-- END GOLD SECTION -->
+        
+        <div class="simulation-history-section">
+            <h2 id="simulationHistoryTitle">Sejarah Simulasi</h2>
+            <div class="button-group">
+                <button id="clearHistoryBtn" class="clear-history-btn">Kosongkan Sejarah</button>
+                <button id="copyHistoryBtn" class="copy-history-btn">Salin Sejarah (Papan Klip)</button>
+                <button id="downloadHistoryBtn" class="download-history-btn">Muat Turun Sejarah (Fail Teks)</button>
+                <button id="saveDataLocalBtn" class="save-data-btn">Simpan Data (Tempatan)</button>
+                <input type="file" id="loadFileInput" accept=".json" style="display: none;" title="Muat Data dari Fail JSON (Tempatan)">
+                <button id="loadDataLocalBtn" class="load-data-btn">Muat Data (Tempatan)</button>
+                
+                <div class="cloud-features-toggle">
+                    <label id="enableCloudFeaturesLabel" for="enableCloudFeatures">Aktifkan Data Awan:</label>
+                    <input type="checkbox" id="enableCloudFeatures">
+                </div>
+
+                <button id="saveDataCloudBtn" class="save-data-cloud-btn">Simpan Data (Awan)</button>
+                <button id="loadDataCloudBtn" class="load-data-cloud-btn">Muat Data (Awan)</button>
+                
+                <!-- NEW: Help/Info Button -->
+                <button id="helpInfoBtn" class="help-info-btn">Bantuan / Info</button>
+
+                <!-- UPDATED: Button for downloading history heatmaps -->
+                <button id="downloadHistoryHeatmapBtn" class="download-history-btn">Muat Turun Heatmap Sejarah (HTML)</button>
+            </div>
+            <div id="simulationHistoryList" class="history-list">
+                </div>
+        </div>
+    </div> 
+    
+    <script src="script.js"></script>
+
+    <!-- NEW: Help/Info Modal Structure -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modalTitle">Bantuan & Maklumat Enoviax EMS</h2>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
